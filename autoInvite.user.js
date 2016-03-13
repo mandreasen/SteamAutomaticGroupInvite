@@ -7,8 +7,8 @@
 // @match        *://steamcommunity.com/id/*
 // @match        *://steamcommunity.com/profile/*
 // @require      http://code.jquery.com/jquery-2.1.4.min.js
-// @downloadURL  https://raw.githubusercontent.com/mha1995/SteamAutomaticGroupInvite/master/autoInvite.user.js
-// @updateURL    https://raw.githubusercontent.com/mha1995/SteamAutomaticGroupInvite/master/autoInvite.user.js
+// @downloadURL  https://raw.githubusercontent.com/mandreasen/SteamAutomaticGroupInvite/master/autoInvite.user.js
+// @updateURL    https://raw.githubusercontent.com/mandreasen/SteamAutomaticGroupInvite/master/autoInvite.user.js
 // @grant        none
 // ==/UserScript==
 
