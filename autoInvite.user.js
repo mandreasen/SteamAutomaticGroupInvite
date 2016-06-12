@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Steam Automatic Group Invite
 // @namespace    www.mandreasen.com
-// @version      1.0.0
+// @version      1.0.1
 // @description  This script do it easy for you, when you like to invite some people to your Steam group.
 // @author       Michael
 // @match        *://steamcommunity.com/id/*
@@ -26,7 +26,7 @@ function InviteUserToSteamGroup(group_id)
 	};
 
 	$.ajax({
-		url: 'http://steamcommunity.com/actions/GroupInvite',
+		url: isHttps() + '://steamcommunity.com/actions/GroupInvite',
 		data: params,
 		type: 'POST',
 		dataType: 'json'
@@ -44,7 +44,7 @@ function InviteUserToSteamGroup(group_id)
 function GetGroupData(steam_group_custom_url)
 {
 	return $.ajax({
-		url: 'http://steamcommunity.com/groups/' + steam_group_custom_url + '/memberslistxml',
+		url: isHttps() + '://steamcommunity.com/groups/' + steam_group_custom_url + '/memberslistxml',
 		data: { xml:1 },
 		type: 'GET',
 		dataType: 'xml'
@@ -53,6 +53,14 @@ function GetGroupData(steam_group_custom_url)
 	}).fail(function() {
 		console.log('The request failed or the group custom URL is wrong.');
 	});
+}
+
+function isHttps() {
+	if (window.location.protocol != "https:") {
+		return "http";
+	} else {
+		return "https";
+	}
 }
 
 // Start invite process
