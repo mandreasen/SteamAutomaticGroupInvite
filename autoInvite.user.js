@@ -1,8 +1,7 @@
 // ==UserScript==
 // @name         Steam Automatic Group Invite
-// @namespace    www.mandreasen.com
-// @version      1.0.1
-// @description  This script do it easy for you, when you like to invite some people to your Steam group.
+// @version      2.0
+// @description  This script automatically invites members to your steam group when you load their profile.
 // @author       Michael
 // @match        *://steamcommunity.com/id/*
 // @match        *://steamcommunity.com/profiles/*
@@ -12,56 +11,55 @@
 // @grant        none
 // ==/UserScript==
 
-// Set the group custom URL you want people to be invited to. (NOT THE FULL URL ONLY CUSTOM URL)
-var steam_group_custom_url = "customURL";
+var sagi = new function() {
+	// Set the custom URL of the group you want peoplen to be invited to. Do not enter the entire URL.
+	// For example: Your group URL is http://steamcommunity.com/groups/steamIsCool, enter steamIsCool in "", replacing customURL.
+	this.custom_url = "customURL",
 
-function InviteUserToSteamGroup(group_id)
-{
-	var params = {
-		json: 1,
-		type: 'groupInvite',
-		group: group_id,
-		sessionID: g_sessionID,
-		invitee: g_rgProfileData.steamid
-	};
+	this.urlProtocol = function() {
+		return (window.location.protocol == "https:") ? "https" : "http";
+	},
 
-	$.ajax({
-		url: isHttps() + '://steamcommunity.com/actions/GroupInvite',
-		data: params,
-		type: 'POST',
-		dataType: 'json'
-	}).done(function(data) {
-		if (data.duplicate) {
-			console.log('[' + g_rgProfileData.steamid + '] The user are already in the group or have already received invites.');
-		} else {
-			console.log('[' + g_rgProfileData.steamid + '] Invite to Join Your Group.');
-		}
-	}).fail(function() {
-		console.log('Error processing your request. Please try again.');
-	});
-}
+	this.execute = function() {
+		var groupURL = this.urlProtocol() + "://steamcommunity.com/groups/" + this.custom_url + "/memberslistxml";
 
-function GetGroupData(steam_group_custom_url)
-{
-	return $.ajax({
-		url: isHttps() + '://steamcommunity.com/groups/' + steam_group_custom_url + '/memberslistxml',
-		data: { xml:1 },
-		type: 'GET',
-		dataType: 'xml'
-	}).done(function(xml) {
-		InviteUserToSteamGroup($(xml).find('groupID64').text());
-	}).fail(function() {
-		console.log('The request failed or the group custom URL is wrong.');
-	});
-}
+		$.ajax({
+			url: groupURL,
+			data: {xml:1},
+			type: 'GET',
+			dataType: 'xml'
+		}).done(function(xml) {
+			var groupID64 = $(xml).find('groupID64').text();
 
-function isHttps() {
-	if (window.location.protocol != "https:") {
-		return "http";
-	} else {
-		return "https";
+			if (groupID64.length > 0) {
+				sagi.invite(groupID64);
+			} else {
+				console.log("Fail to find groupID64.");
+			}
+		}).fail(function() {
+			console.log("The request failed or the group custom URL is wrong.");
+		});
+	},
+
+	this.invite = function(groupID64) {
+		var inviteURL = this.urlProtocol() + "://steamcommunity.com/actions/GroupInvite";
+
+		$.ajax({
+			url: inviteURL,
+			data: {json: 1, type: 'groupInvite', group: groupID64, sessionID: g_sessionID, invitee: g_rgProfileData.steamid},
+			type: 'POST',
+			dataType: 'json'
+		}).done(function(data) {
+			if (data.duplicate) {
+				console.log("[" + g_rgProfileData.steamid + "] The user are already in the group or have already received an invite.");
+			} else {
+				console.log("[" + g_rgProfileData.steamid + "] Invite to Join Your Group.");
+			}
+		}).fail(function() {
+			console.log("Error processing your request. Please try again.");
+		});
 	}
-}
+};
 
 // Start invite process
-GetGroupData(steam_group_custom_url);
+sagi.execute(sagi.custom_url);
