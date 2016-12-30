@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Steam Automatic Group Invite
-// @version      2.0
+// @version      2.0.1
 // @description  This script automatically invites members to your steam group when you load their profile.
 // @author       Michael
 // @match        *://steamcommunity.com/id/*
@@ -11,17 +11,19 @@
 // @grant        none
 // ==/UserScript==
 
-var sagi = new function() {
+$(document).ready(function() {
 	// Set the custom URL of the group you want peoplen to be invited to. Do not enter the entire URL.
 	// For example: Your group URL is http://steamcommunity.com/groups/steamIsCool, enter steamIsCool in "", replacing customURL.
-	this.custom_url = "customURL",
+	sagi.execute("customURL");
+});
 
+var sagi = new function() {
 	this.urlProtocol = function() {
 		return (window.location.protocol == "https:") ? "https" : "http";
 	},
 
-	this.execute = function() {
-		var groupURL = this.urlProtocol() + "://steamcommunity.com/groups/" + this.custom_url + "/memberslistxml";
+	this.execute = function(customURL) {
+		var groupURL = this.urlProtocol() + "://steamcommunity.com/groups/" + customURL + "/memberslistxml";
 
 		$.ajax({
 			url: groupURL,
@@ -34,7 +36,7 @@ var sagi = new function() {
 			if (groupID64.length > 0) {
 				sagi.invite(groupID64);
 			} else {
-				console.log("Fail to find groupID64.");
+				console.log("Failed to find groupID64.");
 			}
 		}).fail(function() {
 			console.log("The request failed or the group custom URL is wrong.");
@@ -60,6 +62,3 @@ var sagi = new function() {
 		});
 	}
 };
-
-// Start invite process
-sagi.execute(sagi.custom_url);

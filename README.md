@@ -2,7 +2,7 @@
 
 This script automatically invites members to your steam group when you load their profile.
 
-You only need to set this.custom_url variable to your Steam group custom URL and then when you visit a Steam profile, the script will automatically invites members to your steam group.
+You only need to change the text customURL in sagi.execute("") to your Steam group custom URL and then when you visit a Steam profile, the script will automatisk invite the profile to your steam group.
 
 ## Be awar! ##
 **Use of this script may violate steam's terms of service. You have been warned!**
